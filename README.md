@@ -121,27 +121,29 @@ Using Command Line
 
 7. To test the serverless application, you can hit the routes provided and verify the status of the pods going to the developer console to see the status of the  pod being re-created. This is now the point where you have successfully deploy an application that can scale down to 0 and bring it back up again once the expose url is hit by a request.
 
+![knative5](https://user-images.githubusercontent.com/17167732/75420293-9e126f80-599c-11ea-8e95-06fbc529cf91.png)
 
 
 # Using Developer Console.
 This is to show that you can create a serverless application using Developer Console.
 
 1. Select container image. 
+![knative6](https://user-images.githubusercontent.com/17167732/75420401-da45d000-599c-11ea-91a6-96aa43ddb461.png)
 
 2. Make sure you verify the image by clicking the button.
+![knative7](https://user-images.githubusercontent.com/17167732/75420412-ddd95700-599c-11ea-9ab7-affc667d6184.png)
 
- 
 3. Select Knative Service as your resource type.
-
+![knative8](https://user-images.githubusercontent.com/17167732/75420569-25f87980-599d-11ea-80de-e727857eb854.png)
 
 
 4. You can choose the number of pods as you Max number of pods when scaling up as part of you serverless option and click create.
+![knative9](https://user-images.githubusercontent.com/17167732/75420580-2a249700-599d-11ea-98d7-82ef3c8bd930.png)
 
-4. You will automatically be directed to Topology view. You can then monitor the status of your deployment.
+5. You will automatically be directed to Topology view. You can then monitor the status of your deployment.
+![kNATIVE10](https://user-images.githubusercontent.com/17167732/75420586-2e50b480-599d-11ea-8022-b25028fea5df.png)
 
-
-
-5. Once the container is running, you can test the application by selecting the routes and see if you can access exposed routes. If you are succesful, you can wait for a few minutes and see if the pods will scale to zero. Once the pods has scaled to zero, hit the routes again and monitor if the pods are re-created by the knative serving. Once you see it re-created, your demo is a success!! 
+6. Once the container is running, you can test the application by selecting the routes and see if you can access exposed routes. If you are succesful, you can wait for a few minutes and see if the pods will scale to zero. Once the pods has scaled to zero, hit the routes again and monitor if the pods are re-created by the knative serving. Once you see it re-created, your demo is a success!! 
 
 
 # References: 
