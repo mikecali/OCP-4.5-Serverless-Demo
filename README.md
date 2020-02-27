@@ -45,11 +45,13 @@ a. Wait until the control plane pods are completely created before going to the 
 # Serverless (Knative) Preparation:
 1. Login as Admin to your OCP 4.3 cluster
 2. Navigate to Operator Hub and select Serverless Operator (by Red Hat) to install the operator.
+![knative1](https://user-images.githubusercontent.com/17167732/75419766-7078f680-599b-11ea-81b4-f41e8dab78a1.png)
 4. Create a namespace and name it knative-serving. This is the name-space that we will use to deploy knativeserving instance    using the serverless operator
 
         $oc new-project knative-serving
 
 5. Deploy knative-native serving on the knative-serving namespace.
+![knative2](https://user-images.githubusercontent.com/17167732/75419880-addd8400-599b-11ea-952a-4f24843eeba1.png)
 
 Note to wait for the pods to be created before proceeding to the next steps. You should see something like below.
 
@@ -109,10 +111,11 @@ Using Command Line
         - The pods that was created by the deployment 
         - The revisions where you can set traffic distribution.
         - Overall information that includes, labels, anotations, name of the application and the owner of the applications.
-
+![knative3](https://user-images.githubusercontent.com/17167732/75420162-407e2300-599c-11ea-9ed8-149205e14cc5.png)
 
 6. To verify further, go to Serverless Tab on your admin console and check the services, revisions and routes. In the routes provided, you can access your sample application.
 
+![knative4](https://user-images.githubusercontent.com/17167732/75420206-6277a580-599c-11ea-84e5-ee11c0899245.png)
 
 
 
