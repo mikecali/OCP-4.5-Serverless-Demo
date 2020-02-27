@@ -15,12 +15,13 @@ Red Hat serverless has three components, these are build, serving and events. Bu
         b. Elastic Search
         c. Kiali
         d. Openshift Service Mesh
-
+![image](https://user-images.githubusercontent.com/17167732/75419127-07dd4a00-599a-11ea-980a-bd8531e839f1.png)
 2. Once Service mesh and the required components are installed, you now need to deploy the service mesh control plane. The service control plane needs to be deployed in istio-system namespace. 
         $ oc new-project istio-system
 
 3. Deploy Service Mesh control plane to the newly created namespace istio-system. 
 
+![image](https://user-images.githubusercontent.com/17167732/75419204-38bd7f00-599a-11ea-88e3-8ea77541af91.png)
 
 a. Wait until the control plane pods are completely created before going to the next steps. Below are the pods that you need expect once service control plane deployment is completed.
 
