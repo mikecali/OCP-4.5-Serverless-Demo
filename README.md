@@ -39,9 +39,39 @@ a. Wait until the control plane pods are completely created before going to the 
     jaeger-5c784f744b-cd4pm                   2/2     Running   0          5m55s
     kiali-7d8776f4f7-ll8xh                    1/1     Running   0          107s
     prometheus-6967f6f77d-hbn44               2/2     Running   0          7m1s
+5. This steps is optional - but you can test your service mesh deployment using this sample app from Istio website - https://istio.io/docs/examples/bookinfo/
 
-4. This steps is optional - but you can test your service mesh deployment using this sample app from Istio website - https://istio.io/docs/examples/bookinfo/
+To do this, you have to do the following steps:
 
+- The first step is to create namespace for the bookinfo application - call it bookinfo. I can do this either on the GUI or the command line - let's do it on the command line:
+     ~~~
+      oc new-project bookinfo
+     ~~~~ 
+- The next step is to create a Service Mesh Member Roll on the same screen you created a new Istio Service Mesh Control      Plane about - this essentially dictates which namespaces we'll apply Service Mesh control to. Just enter bookinfo.
+
+- Finally I install my bookinfo microservices application - which my Service Mesh Member Roll is looking out to apply control to. I'll do that by applying some yaml that installs the Bookinfo Microservices application. As soon as this is created, the Service Mesh Member Roll will apply Service Mesh control to it. Execute the following:
+  ~~~
+  oc project bookinfo
+  oc apply -f https://raw.githubusercontent.com/istio/istio/release-1.3/samples/bookinfo/platform/kube/bookinfo.yaml
+  ~~~
+  
+- Next we need to setup some Service Mesh constructs, inherited from Upstream Istio, for Service Mesh control. First the Envoy based side car proxies and the microservices to apply them to:
+~~~
+oc apply -n bookinfo -f https://raw.githubusercontent.com/Maistra/bookinfo/maistra-1.0/bookinfo.yaml
+~~~
+- Next an Istio gateway - representing the port and protocol at the ingress point to the mesh(in our case HTTP and port 80):
+~~~
+oc apply -n bookinfo -f https://raw.githubusercontent.com/Maistra/bookinfo/maistra-1.0/bookinfo-gateway.yaml
+~~~
+- Next the Istio Destination rules, that is addressible services and their versions:
+~~~
+oc apply -n bookinfo -f https://raw.githubusercontent.com/istio/istio/release-1.1/samples/bookinfo/networking/destination-rule-all.yaml
+~~~
+- Now, output the Gateway URL:
+~~~
+export GATEWAY_URL=$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')
+echo $GATEWAY_URL
+~~~  
 # Serverless (Knative) Preparation:
 1. Login as Admin to your OCP 4.3 cluster
 2. Navigate to Operator Hub and select Serverless Operator (by Red Hat) to install the operator.
