@@ -103,7 +103,7 @@ Using Command Line
 
 1. Create a namespace for the sample app that you will deploy - In this example I will use serverless-demo
 
-        $ oc new-project knative-serving
+        $ oc new-project serverless-demo
  
 2. Deploy sample go hello world application. Below is the example code. Let’s call this service.yaml
 
