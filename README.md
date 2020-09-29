@@ -191,7 +191,32 @@ Any new change in the code or the service configuration triggers a revision, a s
 
 1. Let's update the helloworld-go application
 
-   $ kn service update helloworld-go --env RESPONSE="Hello OpenShift!"
+          $ kn service update helloworld-go --env RESPONSE="Hello OpenShift!"
+          Updating Service 'helloworld-go' in namespace 'aserverlessdemo':
+
+          4.128s Ready to serve.
+
+          Service 'helloworld-go' updated to latest revision 'helloworld-go-gngxv-5' is available at URL:
+          http://helloworld-go-aserverlessdemo.apps.cluster-e9f2.e9f2.example.opentlc.com
+
+2. Then let's describe the serverless service itself using `kn` command.
+
+           $ kn service describe helloworld-go
+             Name:       helloworld-go
+             Namespace:  aserverlessdemo
+             Age:        9h
+             URL:        http://helloworld-go-aserverlessdemo.apps.cluster-e9f2.e9f2.example.opentlc.com
+
+             Revisions:  
+                 +  helloworld-go-gngxv-5 (current @latest) [3] (5m)
+                   Image:  gcr.io/knative-samples/helloworld-go (at 5ea96b)
+                 100%  helloworld-go-vgcgh-2 #rev1 [2] (9h)
+                   Image:  gcr.io/knative-samples/helloworld-go (at 5ea96b)
+
+             Conditions:  
+             OK TYPE                   AGE REASON
+             ++ Ready                   5m 
+   
 
 # Using Developer Console.
 This is to show that you can create a serverless application using Developer Console.
