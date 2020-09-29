@@ -168,6 +168,30 @@ Now that we know the different way of deploying a serverless application, let's 
 
 ![knative5](https://user-images.githubusercontent.com/17167732/75420293-9e126f80-599c-11ea-8e95-06fbc529cf91.png)
 
+8. How about we explore the serverless serving a little bit? 
+   First, lets find the serverless ingress gateway's public address
+  
+          $oc -n knative-serving-ingress get svc kourier
+          NAME      TYPE           CLUSTER-IP     EXTERNAL-IP                                                                    PORT(S)                      AGE
+          kourier   LoadBalancer   172.30.20.34   a1534e2a8f3e54314aed9b69ac64eefc-1280993366.ap-southeast-1.elb.amazonaws.com   80:32479/TCP,443:30946/TCP   24h
+
+9. Then using `kn` command line, let us display the knative services
+
+          $ kn service list
+          NAME            URL                                                                             LATEST                AGE   CONDITIONS   READY   REASON
+          event-display   http://event-display-bserverlessdemo-eventing.apps.cluster-e9f2.e9f2.example.opentlc.com   event-display-kthvp   9h    3 OK / 3     True 
+
+# Spliting the Traffic to your Severlessi Application.
+
+Now that your simple serverless application is actually working and has an ability to scale up and down (most importantly it can scale to 0), we now need to see how we can split the traffic to go lang application.
+
+We will do this using commandline and developers perspective UI.
+
+Any new change in the code or the service configuration triggers a revision, a snapshot of the code at a given time. For a service, you can manage the traffic between the revisions of the service by splitting and routing it to the different revisions as required.
+
+1. Let's update the helloworld-go application
+
+   $ kn service update helloworld-go --env RESPONSE="Hello OpenShift!"
 
 # Using Developer Console.
 This is to show that you can create a serverless application using Developer Console.
