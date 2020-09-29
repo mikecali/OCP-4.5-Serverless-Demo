@@ -4,7 +4,7 @@
 Red Hat serverless has three components, these are build, serving and events. Build is a plugable model for building artifacts like jar, files, zip or containers from source code. Serving is an event-driven model that serves the container with your application and can “scale to zero”. Events are the common infrastructure for consuming and producing events that will stimulate the application. For this lab, we will focus on building and serving only.
 
 # Assumption: 
-1. OCP 4.3 installed with 3 Masters and 3 worker nodes.
+1. OCP 4.5 installed with 3 Masters and some worker nodes.
 2. Machinesets are configured to allow node scaling.
 3. A working Service Mesh operator deployed.
 
@@ -15,91 +15,103 @@ Red Hat serverless has three components, these are build, serving and events. Bu
         b. Elastic Search
         c. Kiali
         d. Openshift Service Mesh
-![image](https://user-images.githubusercontent.com/17167732/75419127-07dd4a00-599a-11ea-980a-bd8531e839f1.png)
+![image](https://user-images.githubusercontent.com/17167732/94499298-c925b000-0258-11eb-907f-2c2d039da913.png)
+
 2. Once Service mesh and the required components are installed, you now need to deploy the service mesh control plane. The service control plane needs to be deployed in istio-system namespace. 
         $ oc new-project istio-system
 
 3. Deploy Service Mesh control plane to the newly created namespace istio-system. 
 
-![image](https://user-images.githubusercontent.com/17167732/75419204-38bd7f00-599a-11ea-88e3-8ea77541af91.png)
+![image](https://user-images.githubusercontent.com/17167732/94499353-f1adaa00-0258-11eb-8f59-324a1959e79c.png)
+
 
 a. Wait until the control plane pods are completely created before going to the next steps. Below are the pods that you need expect once service control plane deployment is completed.
 
-    $  oc get pods
-    NAME                                      READY   STATUS    RESTARTS   AGE
-    grafana-9d64c5f55-qt44t                   2/2     Running   0          2m40s
-    istio-citadel-cc769b7cd-9lr58             1/1     Running   0          7m33s
-    istio-egressgateway-7c976b4cb6-p4hwg      1/1     Running   0          3m36s
-    istio-galley-6b77d9979c-cl4sq             1/1     Running   0          5m52s
-    istio-ingressgateway-54947d94fd-5b9kg     1/1     Running   0          3m36s
-    istio-pilot-946bf9b59-2zkjj               2/2     Running   0          4m28s
-    istio-policy-d88cf66cb-5kgbt              2/2     Running   0          5m15s
-    istio-sidecar-injector-554c66fc5f-kbrpl   1/1     Running   0          3m18s
-    istio-telemetry-7dd5b6cfb4-sct25          2/2     Running   0          5m14s
-    jaeger-5c784f744b-cd4pm                   2/2     Running   0          5m55s
-    kiali-7d8776f4f7-ll8xh                    1/1     Running   0          107s
-    prometheus-6967f6f77d-hbn44               2/2     Running   0          7m1s
+![image](https://user-images.githubusercontent.com/17167732/94499397-13a72c80-0259-11eb-8458-152f2252a0cd.png)
+
 5. This steps is optional - but you can test your service mesh deployment using this sample app from Istio website - https://istio.io/docs/examples/bookinfo/
 
-To do this, you have to do the following steps:
-
-- The first step is to create namespace for the bookinfo application - call it bookinfo. I can do this either on the GUI or the command line - let's do it on the command line:
-     ~~~
-      oc new-project bookinfo
-     ~~~~ 
-- The next step is to create a Service Mesh Member Roll on the same screen you created a new Istio Service Mesh Control      Plane about - this essentially dictates which namespaces we'll apply Service Mesh control to. Just enter bookinfo.
-
-- Finally I install my bookinfo microservices application - which my Service Mesh Member Roll is looking out to apply control to. I'll do that by applying some yaml that installs the Bookinfo Microservices application. As soon as this is created, the Service Mesh Member Roll will apply Service Mesh control to it. Execute the following:
-  ~~~
-  oc project bookinfo
-  oc apply -f https://raw.githubusercontent.com/istio/istio/release-1.3/samples/bookinfo/platform/kube/bookinfo.yaml
-  ~~~
-  
-- Next we need to setup some Service Mesh constructs, inherited from Upstream Istio, for Service Mesh control. First the Envoy based side car proxies and the microservices to apply them to:
-~~~
-oc apply -n bookinfo -f https://raw.githubusercontent.com/Maistra/bookinfo/maistra-1.0/bookinfo.yaml
-~~~
-- Next an Istio gateway - representing the port and protocol at the ingress point to the mesh(in our case HTTP and port 80):
-~~~
-oc apply -n bookinfo -f https://raw.githubusercontent.com/Maistra/bookinfo/maistra-1.0/bookinfo-gateway.yaml
-~~~
-- Next the Istio Destination rules, that is addressible services and their versions:
-~~~
-oc apply -n bookinfo -f https://raw.githubusercontent.com/istio/istio/release-1.1/samples/bookinfo/networking/destination-rule-all.yaml
-~~~
-- Now, output the Gateway URL:
-~~~
-export GATEWAY_URL=$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')
-echo $GATEWAY_URL
-~~~  
 # Serverless (Knative) Preparation:
-1. Login as Admin to your OCP 4.3 cluster
+1. Login as cluster-admin to your OCP 4.5 cluster
+
 2. Navigate to Operator Hub and select Serverless Operator (by Red Hat) to install the operator.
 ![knative1](https://user-images.githubusercontent.com/17167732/75419766-7078f680-599b-11ea-81b4-f41e8dab78a1.png)
+
 4. Create a namespace and name it knative-serving. This is the name-space that we will use to deploy knativeserving instance    using the serverless operator
 
         $oc new-project knative-serving
 
 5. Deploy knative-native serving on the knative-serving namespace.
-![knative2](https://user-images.githubusercontent.com/17167732/75419880-addd8400-599b-11ea-952a-4f24843eeba1.png)
+
+        $oc new-project knative-serving
+        
+![image](https://user-images.githubusercontent.com/17167732/94499539-700a4c00-0259-11eb-89a9-b2a86617445a.png)
+
 
 Note to wait for the pods to be created before proceeding to the next steps. You should see something like below.
 
-    $ oc get pods -n knative-serving
-    NAME                               READY   STATUS    RESTARTS   AGE
-    activator-84b5f4f4d6-nsdjz         1/1     Running   0          3h17m
-    autoscaler-84d84b65db-g9wps        1/1     Running   0          3h17m
-    autoscaler-hpa-66f7f47c4c-rlz4z    1/1     Running   0          3h17m
-    controller-cb7dff454-2vw92         1/1     Running   0          3h17m
-    networking-istio-c9c98f574-8dc4p   1/1     Running   0          3h17m
-    webhook-65b6db457c-9ktth           1/1     Running   0          3h17m
-    $
+         $ oc get pods -n knative-serving
+         NAME                                READY   STATUS    RESTARTS   AGE
+         activator-78fb847596-kl8lp          1/1     Running   1          17h
+         activator-78fb847596-q5c8t          1/1     Running   1          17h
+         autoscaler-56d9fd956f-gc9fj         1/1     Running   2          17h
+         autoscaler-hpa-68f6b9ddd4-4h5ph     1/1     Running   0          17h
+         autoscaler-hpa-68f6b9ddd4-vrd2j     1/1     Running   0          17h
+         controller-6cd8bc875b-hqqr8         1/1     Running   0          17h
+         controller-6cd8bc875b-hxsl4         1/1     Running   0          17h
+         kn-cli-downloads-5f555d9cf4-gw8fb   1/1     Running   0          17h
+         webhook-684c455fd8-zs97d            1/1     Running   0          17h
 
 6. Once all knative-serving pods are running, you can deploy an application. There are many ways of doing this and we will go through those samples in the next section.
 
 # Serverless App deployment
 
-Using Command Line
+As a requirements for this demo, first you need install `kn` commandline on your computer - 
+
+        $ wget https://mirror.openshift.com/pub/openshift-v4/clients/serverless/latest/kn-linux-amd64-0.14.0.tar.gz
+        $ tar -xvf kn-linux-amd64-0.14.0.tar.gz
+
+Verify the installation
+
+`$ kn version
+Version:      v0.14.0
+Build Date:   2020-06-25 16:32:56
+Git Revision: 5235b55
+Supported APIs:
+* Serving
+`  - serving.knative.dev/v1 (knative-serving v0.14.0)
+* Eventing
+`  - sources.knative.dev/v1alpha2 (knative-eventing v0.14.1)
+  - eventing.knative.dev/v1alpha1 (knative-eventing v0.14.1
+
+
+There are more than one way you can deploy a serverless application. These are using the following.
+
+1. Using the usual yaml file.
+
+        apiVersion: serving.knative.dev/v1alpha1
+        kind: Service
+        metadata:
+          name: helloworld-go
+          namespace: serverless-demo
+        spec:
+          template:
+            spec:
+              containers:
+                - image: gcr.io/knative-samples/helloworld-go
+                  env:
+                    - name: TARGET
+                      value: "Go Sample v1"
+
+2. Using knative commandline `kn`  
+
+          kn service create event-display-kn --image danielon30/quarkus-serverless:latest
+
+3. Using OCP Developers perspective UI.
+
+![image](https://user-images.githubusercontent.com/17167732/94512937-e323ba80-0279-11eb-9787-b2c4e04e18e1.png)
+
+Now that we know the different way of deploying a serverless application, let's  start deploy a simple helloworld golang application.
 
 1. Create a namespace for the sample app that you will deploy - In this example I will use serverless-demo
 
@@ -141,7 +153,10 @@ Using Command Line
         - The pods that was created by the deployment 
         - The revisions where you can set traffic distribution.
         - Overall information that includes, labels, anotations, name of the application and the owner of the applications.
-![knative3](https://user-images.githubusercontent.com/17167732/75420162-407e2300-599c-11ea-9ed8-149205e14cc5.png)
+
+![image](https://user-images.githubusercontent.com/17167732/94513751-0b141d80-027c-11eb-9f40-969d0158c341.png)
+
+
 
 6. To verify further, go to Serverless Tab on your admin console and check the services, revisions and routes. In the routes provided, you can access your sample application.
 
