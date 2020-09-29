@@ -44,9 +44,9 @@ a. Wait until the control plane pods are completely created before going to the 
 5. Deploy knative-native serving on the knative-serving namespace.
 
         $oc new-project knative-serving
-        
-![image](https://user-images.githubusercontent.com/17167732/94499539-700a4c00-0259-11eb-89a9-b2a86617445a.png)
 
+![image](https://user-images.githubusercontent.com/17167732/94527569-abc20780-0293-11eb-90ba-91f20020581d.png)
+      
 
 Note to wait for the pods to be created before proceeding to the next steps. You should see something like below.
 
@@ -228,6 +228,8 @@ Any new change in the code or the service configuration triggers a revision, a s
 *Using Command Line
 
             kn service update helloworld-go --traffic @latest=10 --traffic helloworld-go-gngxv-5=50
+
+# Serverless Eventing
 
 
 
