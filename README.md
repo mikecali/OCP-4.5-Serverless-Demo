@@ -231,6 +231,19 @@ Any new change in the code or the service configuration triggers a revision, a s
 
 # Serverless Eventing
 
+When we talk about Serverless Eventing, we need to understand what is Knative Eventing. Knative Eventing on OpenShift Container Platform enables developers to use an event-driven architecture with serverless applications. An event-driven architecture is based on the concept of decoupled relationships between event producers that create events, and event sinks, or consumers, that receive them
+In OpenShift, Knative Eventing uses standard HTTP POST requests to send and receive events between event producers and consumers.
+
+The figure below, show the event-driven application architecture for direct connection of event source to sink bin (knative service/application).
+
+![image](https://user-images.githubusercontent.com/17167732/94597465-17cf5a80-02ea-11eb-87f9-15683bde7a18.png)
+
+This architecture works well, but what if you have multiple sources of event that you need to filter? There is another way of doing this and this is either via `channel & subscription` or `brokers and triggers`.
+
+In this demo, we will just use the direct connection of event-source to sink bin (knative service/application). We will do this both via command line and use OpenShift Developers UI as well.
+
+Let's start!
+
 
 
 # Using Developer Console.
