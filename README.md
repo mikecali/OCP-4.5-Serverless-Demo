@@ -242,12 +242,52 @@ This architecture works well, but what if you have multiple sources of event tha
 
 In this demo, we will just use the direct connection of event-source to sink bin (knative service/application). We will do this both via command line and use OpenShift Developers UI as well.
 
+Prereqs:
+- You have Knative Serving and Eventing installed.
+- You have an installed `kn` command line tool.
+
 Let's start!
 
 1. Create a new project for eventing demo.
     
          $oc new-project bserverlessdemo-eventing
 
+2. List all available sources using `kn`. You can see in the list below the different source type. In this demo we will use *PingSource*.
+        
+        kn source list-types
+        TYPE              NAME                                            DESCRIPTION
+        ApiServerSource   apiserversources.sources.eventing.knative.dev   Watch and send Kubernetes API events to a sink
+        ApiServerSource   apiserversources.sources.knative.dev            Watch and send Kubernetes API events to a sink
+        ContainerSource   containersources.sources.eventing.knative.dev   
+        CronJobSource     cronjobsources.sources.eventing.knative.dev     
+        *PingSource        pingsources.sources.knative.dev                 Send periodically ping events to a sink*
+        SinkBinding       sinkbindings.sources.eventing.knative.dev       Binding for connecting a PodSpecable to a sink
+        SinkBinding       sinkbindings.sources.knative.dev                Binding for connecting a PodSpecable to a sink
+
+3. To verify that the `PingSource` is working, create a simple Knative service that dumps incoming messages to the service’s logs. For the sake of this demo, I will be deploying a quarkus application.
+
+       $ kn service create event-display \
+         >     --image quay.io/openshift-knative/knative-eventing-sources-event-display:latest
+         Creating service 'event-display' in namespace 'bserverlessdemo-eventing':
+
+         0.232s Configuration "event-display" is waiting for a Revision to become ready. 
+
+
+         27.804s ...
+         27.919s Ingress has not yet been reconciled.
+         28.246s Ready to serve.
+
+         Service 'event-display' created to latest revision 'event-display-qzqgj-1' is available at URL:
+         http://event-display-bserverlessdemo-eventing.apps.cluster-e9f2.e9f2.example.opentlc.com
+
+    
+ 4. 
+
+        $ kn source ping create test-ping-source \
+        >     --schedule "*/2 * * * *" \
+        >     --data '{"message": "Hello world!"}' \
+        >     --sink svc:quarkus-serverless
+        Ping source 'test-ping-source' created in namespace 'bserverlessdemo-eventing'.
  
 # Using Developer Console.
 This is to show that you can create a serverless application using Developer Console.
