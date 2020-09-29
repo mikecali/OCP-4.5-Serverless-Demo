@@ -244,8 +244,11 @@ In this demo, we will just use the direct connection of event-source to sink bin
 
 Let's start!
 
+1. Create a new project for eventing demo.
+    
+         $oc new-project bserverlessdemo-eventing
 
-
+ 
 # Using Developer Console.
 This is to show that you can create a serverless application using Developer Console.
 
