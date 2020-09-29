@@ -73,16 +73,16 @@ As a requirements for this demo, first you need install `kn` commandline on your
 
 Verify the installation
 
-`$ kn version
-Version:      v0.14.0
-Build Date:   2020-06-25 16:32:56
-Git Revision: 5235b55
-Supported APIs:
-* Serving
-`  - serving.knative.dev/v1 (knative-serving v0.14.0)
-* Eventing
-`  - sources.knative.dev/v1alpha2 (knative-eventing v0.14.1)
-  - eventing.knative.dev/v1alpha1 (knative-eventing v0.14.1
+        $ kn version
+          Version:      v0.14.0
+          Build Date:   2020-06-25 16:32:56
+          Git Revision: 5235b55
+          Supported APIs:
+          * Serving
+            - serving.knative.dev/v1 (knative-serving v0.14.0)
+          * Eventing
+            - sources.knative.dev/v1alpha2 (knative-eventing v0.14.1)
+            - eventing.knative.dev/v1alpha1 (knative-eventing v0.14.1
 
 
 There are more than one way you can deploy a serverless application. These are using the following.
@@ -108,8 +108,9 @@ There are more than one way you can deploy a serverless application. These are u
           kn service create event-display-kn --image danielon30/quarkus-serverless:latest
 
 3. Using OCP Developers perspective UI.
+   With the developers perspective UI, you can deploy apps via `GIT`, `container image`, `Dockerfile`, `Yaml` or from `Catalog`
 
-![image](https://user-images.githubusercontent.com/17167732/94512937-e323ba80-0279-11eb-9787-b2c4e04e18e1.png)
+![image](https://user-images.githubusercontent.com/17167732/94523405-a1047400-028d-11eb-8f60-24cf1db82fa3.png)
 
 Now that we know the different way of deploying a serverless application, let's  start deploy a simple helloworld golang application.
 
@@ -160,8 +161,7 @@ Now that we know the different way of deploying a serverless application, let's 
 
 6. To verify further, go to Serverless Tab on your admin console and check the services, revisions and routes. In the routes provided, you can access your sample application.
 
-![knative4](https://user-images.githubusercontent.com/17167732/75420206-6277a580-599c-11ea-84e5-ee11c0899245.png)
-
+![image](https://user-images.githubusercontent.com/17167732/94522931-ed02e900-028c-11eb-9637-3ce8c7688994.png)
 
 
 7. To test the serverless application, you can hit the routes provided and verify the status of the pods going to the developer console to see the status of the  pod being re-created. This is now the point where you have successfully deploy an application that can scale down to 0 and bring it back up again once the expose url is hit by a request.
