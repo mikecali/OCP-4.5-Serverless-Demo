@@ -199,7 +199,7 @@ Any new change in the code or the service configuration triggers a revision, a s
           Service 'helloworld-go' updated to latest revision 'helloworld-go-gngxv-5' is available at URL:
           http://helloworld-go-aserverlessdemo.apps.cluster-e9f2.e9f2.example.opentlc.com
 
-2. Then let's describe the serverless service itself using `kn` command.
+2. Then let's describe the serverless service itself using `kn` command. Notice an additional revision highlighted below.
 
            $ kn service describe helloworld-go
              Name:       helloworld-go
@@ -208,7 +208,7 @@ Any new change in the code or the service configuration triggers a revision, a s
              URL:        http://helloworld-go-aserverlessdemo.apps.cluster-e9f2.e9f2.example.opentlc.com
 
              Revisions:  
-                 +  helloworld-go-gngxv-5 (current @latest) [3] (5m)
+                 *+  helloworld-go-gngxv-5 (current @latest) [3] (5m)*
                    Image:  gcr.io/knative-samples/helloworld-go (at 5ea96b)
                  100%  helloworld-go-vgcgh-2 #rev1 [2] (9h)
                    Image:  gcr.io/knative-samples/helloworld-go (at 5ea96b)
@@ -217,6 +217,19 @@ Any new change in the code or the service configuration triggers a revision, a s
              OK TYPE                   AGE REASON
              ++ Ready                   5m 
    
+3. Since we already have updated the application and a new revision was created *+  helloworld-go-gngxv-5 (current @latest) [3] (5m)* we are now ready to split the traffic. We can do this using commandline or developer perspective UI. 
+
+*Using Developers Perspective UI:* 
+
+![image](https://user-images.githubusercontent.com/17167732/94526843-9e584d80-0292-11eb-9242-5a3c3fbfe544.png)
+
+![image](https://user-images.githubusercontent.com/17167732/94527056-ee371480-0292-11eb-9759-5216448e418e.png)
+
+*Using Command Line
+
+            kn service update helloworld-go --traffic @latest=10 --traffic helloworld-go-gngxv-5=50
+
+
 
 # Using Developer Console.
 This is to show that you can create a serverless application using Developer Console.
