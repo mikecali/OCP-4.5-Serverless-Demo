@@ -3,7 +3,7 @@
 
 Red Hat serverless has three components, these are build, serving and events. Build is a plugable model for building artifacts like jar, files, zip or containers from source code. Serving is an event-driven model that serves the container with your application and can “scale to zero”. Events are the common infrastructure for consuming and producing events that will stimulate the application. For this lab, we will focus on building and serving only.
 
-# Assumption: 
+# Assumptions: 
 1. OCP 4.5 installed with 3 Masters and some worker nodes.
 2. Machinesets are configured to allow node scaling.
 3. A working Service Mesh operator deployed.
