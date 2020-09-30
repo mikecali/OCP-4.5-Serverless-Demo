@@ -398,7 +398,7 @@ With Eventing and beyond the auto-scaling behavior (scale down to zero), Serverl
 
 
 # References: 
-   Official Blog: <https://blog.openshift.com/knative-serving-your-serverless-services>
+   Official Blog: <https://blog.openshift.com/knative-serving-your-serverless-services>  
    Knative Project: <https://knative.dev/docs/eventing/sources/>   
 
 
