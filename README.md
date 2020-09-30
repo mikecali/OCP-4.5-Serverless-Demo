@@ -107,7 +107,7 @@ There are more than one way you can deploy a serverless application. These are u
 
           kn service create event-display-kn --image danielon30/quarkus-serverless:latest
 
-3. Using OCP Developers perspective UI.
+3. Using OCP Developers perspective UI:
    With the developers perspective UI, you can deploy apps via `GIT`, `container image`, `Dockerfile`, `Yaml` or from `Catalog`
 
 ![image](https://user-images.githubusercontent.com/17167732/94523405-a1047400-028d-11eb-8f60-24cf1db82fa3.png)
@@ -181,7 +181,7 @@ Now that we know the different way of deploying a serverless application, let's 
           NAME            URL                                                                             LATEST                AGE   CONDITIONS   READY   REASON
           event-display   http://event-display-bserverlessdemo-eventing.apps.cluster-e9f2.e9f2.example.opentlc.com   event-display-kthvp   9h    3 OK / 3     True 
 
-# Spliting the Traffic to your Severlessi Application.
+# Spliting the Traffic to your Severless Application.
 
 Now that your simple serverless application is actually working and has an ability to scale up and down (most importantly it can scale to 0), we now need to see how we can split the traffic to go lang application.
 
@@ -390,7 +390,7 @@ Let's start!
  
 # Conclusion:
 
-With OpenShift Serverless capabilities that includes Serving and Eventing as shown in this demo. This means that you can deploy any programming language of your choice and enable auto-scaling behavior, scaling up to meet demand and down even to zero. This is possible because of OpenShift Serverless Serving feature. Serving enables the deployment of applications and functions as serverless containers.
+With OpenShift Serverless capabilities that include Serving and Eventing as shown in this demo, you now can deploy any programming language of your choice and enable auto-scaling behavior, scaling up to meet demand and down even to zero. This is possible because of OpenShift Serverless Serving feature. Serving enables the deployment of applications and functions as serverless containers.
 
 With Eventing and beyond the auto-scaling behavior (scale down to zero), Serverless eventing can use triggers from variety of sources and recieved events from Cronjob schedule as shown in this demo and other possible event sources such us Kafka messages, file upload to Storage as well as third party event sources like Salesforce, Service Now, E-mail, etc… powered by Camel-K 
 
