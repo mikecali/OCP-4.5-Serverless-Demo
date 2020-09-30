@@ -250,7 +250,7 @@ Let's start!
 
 1. Create a new project for eventing demo.
     
-         $oc new-project bserverlessdemo-eventing
+         $oc new-project aserverlessdemo-eventing
 
 2. List all available sources using `kn`. You can see in the list below the different source type. In this demo we will use *PingSource*.
         
@@ -264,56 +264,142 @@ Let's start!
         SinkBinding       sinkbindings.sources.eventing.knative.dev       Binding for connecting a PodSpecable to a sink
         SinkBinding       sinkbindings.sources.knative.dev                Binding for connecting a PodSpecable to a sink
 
-3. To verify that the `PingSource` is working, create a simple Knative service that dumps incoming messages to the service’s logs. For the sake of this demo, I will be deploying a quarkus application.
+3. To verify that the `PingSource` is working, create a simple Knative service that dumps incoming messages to the service’s logs. For the sake of this demo, I will be deploying a simple  application.
 
-       $ kn service create event-display \
-         >     --image quay.io/openshift-knative/knative-eventing-sources-event-display:latest
-         Creating service 'event-display' in namespace 'bserverlessdemo-eventing':
+       $ kn service create event-display --image quay.io/openshift-knative/knative-eventing-sources-event-display:latest
+  
+  You should see an output similar to below:
+  
+         Creating service 'event-display' in namespace 'aserverlessdemo':
 
-         0.232s Configuration "event-display" is waiting for a Revision to become ready. 
+         0.195s The Route is still working to reflect the latest desired specification.
+         0.292s Configuration "event-display" is waiting for a Revision to become ready.
+         7.264s ...
+         7.393s Ingress has not yet been reconciled.
+         8.112s Ready to serve.
 
-
-         27.804s ...
-         27.919s Ingress has not yet been reconciled.
-         28.246s Ready to serve.
-
-         Service 'event-display' created to latest revision 'event-display-qzqgj-1' is available at URL:
-         http://event-display-bserverlessdemo-eventing.apps.cluster-e9f2.e9f2.example.opentlc.com
+        Service 'event-display' created to latest revision 'event-display-jcppt-1' is available at URL: http://event-display-aserverlessdemo.apps.cluster-e9f2.e9f2.example.opentlc.com
 
     
- 4. 
+ 4.  We then need to create a `Sink Binding` in the same namespace as the event consumer `event-display`. The command below will instantiate a sink binding called bind-hearbeat
 
-        $ kn source ping create test-ping-source \
-        >     --schedule "*/2 * * * *" \
-        >     --data '{"message": "Hello world!"}' \
-        >     --sink svc:quarkus-serverless
-        Ping source 'test-ping-source' created in namespace 'bserverlessdemo-eventing'.
+         $ kn source binding create bind-heartbeat --subject Job:batch/v1:app=heartbeat-cron --sink svc:event-display
+           Sink binding 'bind-heartbeat' created in namespace 'aserverlessdemo'
+  
+  5. We then need to create a cronjob. This will trigger an event based on the scheduled cronjob. Copy below to `cron.yaml` file
+  
+          apiVersion: batch/v1beta1
+          kind: CronJob
+          metadata:
+             name: heartbeat-cron
+          spec:
+          spec:
+          # Run every minute
+          schedule: "* * * * *"
+          jobTemplate:
+            metadata:
+               labels:
+                 app: heartbeat-cron
+            spec:
+              template:
+                 spec:
+                   restartPolicy: Never
+                   containers:
+                     - name: single-heartbeat
+                       image: quay.io/openshift-knative/knative-eventing-sources-heartbeats:latest
+                       args:
+                          - --period=1
+                       env:
+                         - name: ONE_SHOT
+                           value: "true"
+                         - name: POD_NAME
+                           valueFrom:
+                              fieldRef:
+                                fieldPath: metadata.name
+                         - name: POD_NAMESPACE
+                           valueFrom:
+                              fieldRef:
+                                fieldPath: metadata.namespace
  
-# Using Developer Console.
-This is to show that you can create a serverless application using Developer Console.
+        Then apply this cronjob to instantiate the cronjob.
 
-1. Select container image. 
-![knative6](https://user-images.githubusercontent.com/17167732/75420401-da45d000-599c-11ea-91a6-96aa43ddb461.png)
+              $ oc apply -f cron.yaml 
+                cronjob.batch/heartbeat-cron created
+ 
+ 6. Verify the sourcebinding.
+ 
+             $ kn source binding describe bind-heartbeat
+             
+    You should expect similar output as below.
+    
+             Name:         bind-heartbeat
+             Namespace:    aserverlessdemo
+             Annotations:  sources.knative.dev/creator=user1, sources.knative.dev/lastModifier=user1
+             Age:          1m
+             Subject:      
+                Resource:   Job (batch/v1)
+                Selector:   
+                app:      heartbeat-cron
+             Sink:         
+                Name:       event-display
+                Resource:   Service (serving.knative.dev/v1)
+             Conditions:  
+               OK TYPE     AGE REASON
+               ++ Ready     1m 
+ 
+ 
+7. Wait and verify until SinkBinding (SBS) pods is created.
 
-2. Make sure you verify the image by clicking the button.
-![knative7](https://user-images.githubusercontent.com/17167732/75420412-ddd95700-599c-11ea-9ab7-affc667d6184.png)
+         $ oc get pods
+         
+   You should expect similar output below. 
+        
+         NAME                                                READY   STATUS      RESTARTS   AGE
+         event-display-jcppt-1-deployment-7494c6cfbb-fwv4z   2/2     Running     0          6s
+         heartbeat-cron-1601453760-4tg5d                     0/1     Completed   0          26s
 
-3. Select Knative Service as your resource type.
-![knative8](https://user-images.githubusercontent.com/17167732/75420569-25f87980-599d-11ea-80de-e727857eb854.png)
+8. You can verify that the Kubernetes events were sent to the Knative event sink by looking at the message dumper function logs.
 
+        $ oc logs $(oc get pod -o name | grep event-display) -c user-container
+        
+   You should expect similar output below.     
 
-4. You can choose the number of pods as you Max number of pods when scaling up as part of you serverless option and click create.
-![knative9](https://user-images.githubusercontent.com/17167732/75420580-2a249700-599d-11ea-98d7-82ef3c8bd930.png)
+        ☁️  cloudevents.Event
+        Validation: valid
+        Context Attributes,
+          specversion: 1.0
+          type: dev.knative.eventing.samples.heartbeat
+          source: https://knative.dev/eventing-contrib/cmd/heartbeats/#aserverlessdemo/heartbeat-cron-1601453760-4tg5d
+          id: 8bd109e1-0277-4cef-bc07-9033a3f7207f
+          time: 2020-09-30T08:16:24.684270341Z
+          datacontenttype: application/json 
+        Extensions,
+          beats: true
+          heart: yes
+          the: 42
+        Data,
+          {
+            "id": 1,
+            "label": ""
+          }
+ 
+ 9. Or you can verify via OpenShift Developers perspective UI.
 
-5. You will automatically be directed to Topology view. You can then monitor the status of your deployment.
-![kNATIVE10](https://user-images.githubusercontent.com/17167732/75420586-2e50b480-599d-11ea-8022-b25028fea5df.png)
+![image](https://user-images.githubusercontent.com/17167732/94660704-85b76880-0362-11eb-800d-446c06705803.png)
 
-6. Once the container is running, you can test the application by selecting the routes and see if you can access exposed routes. If you are succesful, you can wait for a few minutes and see if the pods will scale to zero. Once the pods has scaled to zero, hit the routes again and monitor if the pods are re-created by the knative serving. Once you see it re-created, your demo is a success!! 
+ 
+# Conclusion:
+
+With OpenShift Serverless capabilities that includes Serving and Eventing as shown in this demo. This means that you can deploy any programming language of your choice and enable auto-scaling behavior, scaling up to meet demand and down even to zero. This is possible because of OpenShift Serverless Serving feature. Serving enables the deployment of applications and functions as serverless containers.
+
+With Eventing and beyond the auto-scaling behavior (scale down to zero), Serverless eventing can use triggers from variety of sources and recieved events from Cronjob schedule as shown in this demo and other possible event sources such us Kafka messages, file upload to Storage as well as third party event sources like Salesforce, Service Now, E-mail, etc… powered by Camel-K 
+
+ 
 
 
 # References: 
     https://blog.openshift.com/knative-serving-your-serverless-services
-    https://github.com/tnscorcoran/openshift-servicemesh
+    https://knative.dev/docs/eventing/sources/   
 
 
 
