@@ -9,7 +9,7 @@ Red Hat serverless has three components, these are build, serving and events. Bu
 3. A working Service Mesh operator deployed.
 
 # Pre-requisites (Service Mesh deployment):
-1. Deploy service mesh and the required components in your OCP 4.5 cluster (Make sure you are selecting the Red Hat     supported operator).
+1. Deploy service mesh and the required components in your OCP 4.5 cluster (Make sure you are selecting the Red Hat supported operator). These operators needs to be deployed on istio-system namespace.
  
         a. Jaeger
         b. Elastic Search
